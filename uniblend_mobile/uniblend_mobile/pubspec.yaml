@@ -1,0 +1,50 @@
+name: uniblend_mobile
+description: "UniBlend Mobile App - Flutter client for Laravel API"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core Dependencies
+  cupertino_icons: ^1.0.8
+  provider: ^6.1.5
+  http: ^1.4.0
+  flutter_secure_storage: ^9.2.4
+
+  # UI Components
+  bottom_navy_bar: ^6.1.0
+  cached_network_image: ^3.4.1
+
+  # Media
+  image_picker: ^1.1.2
+  chewie: ^1.8.5
+  
+  # Audio
+  just_audio: ^0.9.34
+  audio_video_progress_bar: ^1.0.1
+  rxdart: ^0.27.7
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.1
+
+  # Utilities
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
