@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/api_response.dart';
 import '../../core/config/api_config.dart';
+import 'package:retry/retry.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -48,15 +49,19 @@ class ApiService {
     Map<String, String>? queryParams,
     T Function(dynamic)? fromJson,
   }) async {
+    final r = RetryOptions(maxAttempts: 3);
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}$endpoint');
-      final uriWithQuery = queryParams != null 
+      final uriWithQuery = queryParams != null
           ? uri.replace(queryParameters: queryParams)
           : uri;
 
-      final response = await _client
-          .get(uriWithQuery, headers: await _headersWithAuth)
-          .timeout(ApiConfig.receiveTimeout);
+      final response = await r.retry(
+        () => _client
+            .get(uriWithQuery, headers: await _headersWithAuth)
+            .timeout(ApiConfig.receiveTimeout),
+        retryIf: (e) => e is SocketException || e is HttpException,
+      );
 
       return _handleResponse<T>(response, fromJson);
     } catch (e) {
@@ -69,16 +74,20 @@ class ApiService {
     Map<String, dynamic>? body,
     T Function(dynamic)? fromJson,
   }) async {
+    final r = RetryOptions(maxAttempts: 3);
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}$endpoint');
-      
-      final response = await _client
-          .post(
-            uri,
-            headers: await _headersWithAuth,
-            body: body != null ? jsonEncode(body) : null,
-          )
-          .timeout(ApiConfig.receiveTimeout);
+
+      final response = await r.retry(
+        () => _client
+            .post(
+              uri,
+              headers: await _headersWithAuth,
+              body: body != null ? jsonEncode(body) : null,
+            )
+            .timeout(ApiConfig.receiveTimeout),
+        retryIf: (e) => e is SocketException || e is HttpException,
+      );
 
       return _handleResponse<T>(response, fromJson);
     } catch (e) {
@@ -91,16 +100,20 @@ class ApiService {
     Map<String, dynamic>? body,
     T Function(dynamic)? fromJson,
   }) async {
+    final r = RetryOptions(maxAttempts: 3);
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}$endpoint');
-      
-      final response = await _client
-          .put(
-            uri,
-            headers: await _headersWithAuth,
-            body: body != null ? jsonEncode(body) : null,
-          )
-          .timeout(ApiConfig.receiveTimeout);
+
+      final response = await r.retry(
+        () => _client
+            .put(
+              uri,
+              headers: await _headersWithAuth,
+              body: body != null ? jsonEncode(body) : null,
+            )
+            .timeout(ApiConfig.receiveTimeout),
+        retryIf: (e) => e is SocketException || e is HttpException,
+      );
 
       return _handleResponse<T>(response, fromJson);
     } catch (e) {
@@ -112,12 +125,16 @@ class ApiService {
     String endpoint, {
     T Function(dynamic)? fromJson,
   }) async {
+    final r = RetryOptions(maxAttempts: 3);
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}$endpoint');
-      
-      final response = await _client
-          .delete(uri, headers: await _headersWithAuth)
-          .timeout(ApiConfig.receiveTimeout);
+
+      final response = await r.retry(
+        () => _client
+            .delete(uri, headers: await _headersWithAuth)
+            .timeout(ApiConfig.receiveTimeout),
+        retryIf: (e) => e is SocketException || e is HttpException,
+      );
 
       return _handleResponse<T>(response, fromJson);
     } catch (e) {
@@ -130,11 +147,11 @@ class ApiService {
     T Function(dynamic)? fromJson,
   ) {
     final statusCode = response.statusCode;
-    
+
     if (statusCode >= 200 && statusCode < 300) {
       try {
         final decodedBody = jsonDecode(response.body);
-        
+
         if (fromJson != null) {
           final data = fromJson(decodedBody['data'] ?? decodedBody);
           return ApiResponse.success(data);

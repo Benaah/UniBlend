@@ -8,6 +8,9 @@ use App\Models\Post;
 use App\Models\FlashClass;
 use App\Models\Booking;
 use App\Models\Wallet;
+use App\Models\MusicTrack;
+use App\Models\Playlist;
+use App\Models\Notification;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -54,6 +57,21 @@ class AdminDashboardStats extends BaseWidget
             Stat::make('Pending Bookings', Booking::where('status', 'pending')->count())
                 ->description('Awaiting confirmation')
                 ->descriptionIcon('heroicon-m-clock')
+                ->color('warning'),
+
+            Stat::make('Music Tracks', MusicTrack::count())
+                ->description('Total music tracks')
+                ->descriptionIcon('heroicon-m-musical-note')
+                ->color('info'),
+
+            Stat::make('Active Playlists', Playlist::where('status', 'active')->count())
+                ->description('Public playlists')
+                ->descriptionIcon('heroicon-m-queue-list')
+                ->color('success'),
+
+            Stat::make('Unread Notifications', Notification::where('read_status', false)->count())
+                ->description('Pending notifications')
+                ->descriptionIcon('heroicon-m-bell')
                 ->color('warning'),
         ];
     }

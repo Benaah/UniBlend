@@ -168,7 +168,8 @@ class AuthController extends Controller
     public function sendPhoneVerification(User $user)
     {
         $code = rand(100000, 999999);
-        // Store code in cache or database for verification (not implemented here)
+        // Store code in cache for verification
+        cache()->put('phone_verification_code_'.$user->id, $code, now()->addMinutes(10));
         Notification::send($user, new PhoneVerificationNotification($code));
     }
 
@@ -179,12 +180,18 @@ class AuthController extends Controller
             'code' => 'required|string',
         ]);
 
-        // Verify code from cache or database (not implemented here)
-        // For demo, assume code is valid
-
         $user = $request->user();
+        $cachedCode = cache()->get('phone_verification_code_'.$user->id);
+
+        if (!$cachedCode || $validated['code'] !== $cachedCode) {
+            return response()->json(['message' => 'Invalid or expired verification code'], 400);
+        }
+
         $user->phone_verified_at = now();
         $user->save();
+
+        // Remove the code from cache after successful verification
+        cache()->forget('phone_verification_code_'.$user->id);
 
         return response()->json(['message' => 'Phone verified successfully']);
     }

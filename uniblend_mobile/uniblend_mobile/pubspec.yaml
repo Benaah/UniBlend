@@ -16,6 +16,7 @@ dependencies:
   provider: ^6.1.5
   http: ^1.4.0
   flutter_secure_storage: ^9.2.4
+  retry: ^3.1.0
 
   # UI Components
   bottom_navy_bar: ^6.1.0
@@ -24,7 +25,7 @@ dependencies:
   # Media
   image_picker: ^1.1.2
   chewie: ^1.8.5
-  
+
   # Audio
   just_audio: ^0.9.34
   audio_video_progress_bar: ^1.0.1

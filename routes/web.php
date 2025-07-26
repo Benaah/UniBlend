@@ -20,3 +20,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/api.php';
+
+// Register Filament admin panel routes
+use Filament\Facades\Filament;
+Filament::serving(function () {
+    // This ensures Filament routes are registered
+});

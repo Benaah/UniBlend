@@ -13,7 +13,7 @@ import 'core/themes/kenyan_theme.dart';
 void main() {
   // Initialize API service
   ApiService().init();
-  
+
   runApp(const UniBlendApp());
 }
 
@@ -69,27 +69,32 @@ class _AuthWrapperState extends State<AuthWrapper> {
       builder: (context, authProvider, child) {
         // Show loading screen while checking auth status
         if (authProvider.isLoading) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(
+                  CircularProgressIndicator(
+                    strokeWidth: 6,
+                    color: Colors.deepPurple,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
                     'UniBlend',
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.deepPurple,
+                      letterSpacing: 2,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                     'Connect. Learn. Blend.',
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
+                      fontSize: 18,
+                      color: Colors.black54,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                 ],

@@ -134,10 +134,11 @@ class LocalNotificationService {
   }
 
   Future<void> setBadgeCount(int count) async {
-    // iOS only 
-    await _notifications
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-        ?.setApplicationIconBadgeNumber(count);
+    // iOS only
+    // Removed call to setApplicationIconBadgeNumber due to deprecation/error
+    // await _notifications
+    //     .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+    //     ?.setApplicationIconBadgeNumber(count);
   }
 
   void _onNotificationTapped(NotificationResponse response) {
@@ -146,6 +147,9 @@ class LocalNotificationService {
       // Handle notification tap
       // You can parse the payload and navigate to specific screens
       debugPrint('Notification tapped with payload: $payload');
+      // Example: Navigate to a specific screen based on payload
+      // This requires a navigator key or context, which can be passed or accessed globally
+      // For demonstration, just print the payload here
     }
   }
 
