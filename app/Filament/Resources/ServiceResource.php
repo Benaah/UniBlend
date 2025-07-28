@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Filters\SelectFilter;
 
 class ServiceResource extends Resource
 {
@@ -89,7 +90,12 @@ class ServiceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('name')
+                    ->label('Name')
+                    ->searchable()
+                    ->options(function () {
+                        return \App\Models\Service::pluck('name', 'id')->toArray();
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -110,5 +116,10 @@ class ServiceResource extends Resource
             'create' => Pages\CreateService::route('/create'),
             'edit' => Pages\EditService::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count() ?: null;
     }
 }

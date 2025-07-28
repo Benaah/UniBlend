@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Filters\SelectFilter;
 
 class ClubResource extends Resource
 {
@@ -33,7 +34,7 @@ class ClubResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->columnSpanFull(),
-                
+
                 Textarea::make('description')
                     ->required()
                     ->rows(4)
@@ -47,32 +48,37 @@ class ClubResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->sortable(),
-                
+
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('description')
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 50 ? $state : null;
                     }),
-                
+
                 TextColumn::make('threads_count')
                     ->label('Threads')
                     ->counts('threads')
                     ->sortable()
                     ->badge()
                     ->color('info'),
-                
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('name')
+                    ->label('Name')
+                    ->searchable()
+                    ->options(function () {
+                        return \App\Models\Club::pluck('name', 'id')->toArray();
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -93,5 +99,10 @@ class ClubResource extends Resource
             'create' => Pages\CreateClub::route('/create'),
             'edit' => Pages\EditClub::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count() ?: null;
     }
 }

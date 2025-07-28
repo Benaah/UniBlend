@@ -1,7 +1,53 @@
 import 'package:flutter/material.dart';
+import 'transport_booking_screen.dart';
+import 'food_delivery_booking_screen.dart';
+import 'booking_details_screen.dart';
 
 class ServicesScreen extends StatelessWidget {
   const ServicesScreen({super.key});
+
+  void _showCurrentLocation(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Current location feature coming soon!')),
+    );
+  }
+
+  void _triggerSOS(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Emergency SOS triggered! Help is on the way.')),
+    );
+  }
+
+  void _navigateToBooking(BuildContext context, String service) {
+    if (service == 'Transport') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const TransportBookingScreen()),
+      );
+    } else if (service == 'Food Delivery') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const FoodDeliveryBookingScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Booking for \$service is not implemented yet.')),
+      );
+    }
+  }
+
+  void _navigateToBookingDetails(BuildContext context, String service, String status, String time) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BookingDetailsScreen(
+          service: service,
+          status: status,
+          time: time,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +59,7 @@ class ServicesScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.location_on),
-            onPressed: () {
-              // TODO: Show current location
-            },
+            onPressed: () => _showCurrentLocation(context),
           ),
         ],
       ),
@@ -51,9 +95,7 @@ class ServicesScreen extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      // TODO: Trigger SOS
-                    },
+                    onPressed: () => _triggerSOS(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.red,
@@ -83,42 +125,48 @@ class ServicesScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 1.2,
-              children: const [
+              children: [
                 _ServiceCard(
                   icon: Icons.directions_car,
                   title: 'Transport',
                   description: 'Campus shuttle & rides',
                   color: Colors.blue,
+                  onTap: () => _navigateToBooking(context, 'Transport'),
                 ),
                 _ServiceCard(
                   icon: Icons.restaurant,
                   title: 'Food Delivery',
                   description: 'Order from cafeteria',
                   color: Colors.green,
+                  onTap: () => _navigateToBooking(context, 'Food Delivery'),
                 ),
                 _ServiceCard(
                   icon: Icons.local_laundry_service,
                   title: 'Laundry',
                   description: 'Pickup & delivery',
                   color: Colors.purple,
+                  onTap: () => _navigateToBooking(context, 'Laundry'),
                 ),
                 _ServiceCard(
                   icon: Icons.cleaning_services,
                   title: 'Cleaning',
                   description: 'Room cleaning service',
                   color: Colors.teal,
+                  onTap: () => _navigateToBooking(context, 'Cleaning'),
                 ),
                 _ServiceCard(
                   icon: Icons.book,
                   title: 'Tutoring',
                   description: 'Academic support',
                   color: Colors.orange,
+                  onTap: () => _navigateToBooking(context, 'Tutoring'),
                 ),
                 _ServiceCard(
                   icon: Icons.build,
                   title: 'Maintenance',
                   description: 'Room repairs',
                   color: Colors.brown,
+                  onTap: () => _navigateToBooking(context, 'Maintenance'),
                 ),
               ],
             ),
@@ -135,23 +183,26 @@ class ServicesScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Booking list
-            const _BookingCard(
+            _BookingCard(
               service: 'Campus Shuttle',
               status: 'In Progress',
               time: '10:30 AM',
               statusColor: Colors.orange,
+              onTap: () => _navigateToBookingDetails(context, 'Campus Shuttle', 'In Progress', '10:30 AM'),
             ),
-            const _BookingCard(
+            _BookingCard(
               service: 'Food Delivery',
               status: 'Delivered',
               time: '12:15 PM',
               statusColor: Colors.green,
+              onTap: () => _navigateToBookingDetails(context, 'Food Delivery', 'Delivered', '12:15 PM'),
             ),
-            const _BookingCard(
+            _BookingCard(
               service: 'Laundry Service',
               status: 'Scheduled',
               time: '2:00 PM',
               statusColor: Colors.blue,
+              onTap: () => _navigateToBookingDetails(context, 'Laundry Service', 'Scheduled', '2:00 PM'),
             ),
           ],
         ),
@@ -165,12 +216,14 @@ class _ServiceCard extends StatelessWidget {
   final String title;
   final String description;
   final Color color;
+  final VoidCallback onTap;
 
   const _ServiceCard({
     required this.icon,
     required this.title,
     required this.description,
     required this.color,
+    required this.onTap,
   });
 
   @override
@@ -178,9 +231,7 @@ class _ServiceCard extends StatelessWidget {
     return Card(
       elevation: 2,
       child: InkWell(
-        onTap: () {
-          // TODO: Navigate to service booking
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -222,12 +273,14 @@ class _BookingCard extends StatelessWidget {
   final String status;
   final String time;
   final Color statusColor;
+  final VoidCallback onTap;
 
   const _BookingCard({
     required this.service,
     required this.status,
     required this.time,
     required this.statusColor,
+    required this.onTap,
   });
 
   @override
@@ -262,9 +315,7 @@ class _BookingCard extends StatelessWidget {
             ),
           ),
         ),
-        onTap: () {
-          // TODO: Show booking details
-        },
+        onTap: onTap,
       ),
     );
   }

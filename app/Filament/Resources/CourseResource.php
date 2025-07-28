@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Filters\SelectFilter;
 
 class CourseResource extends Resource
 {
@@ -33,12 +34,12 @@ class CourseResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                
+
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->columnSpanFull(),
-                
+
                 Textarea::make('description')
                     ->required()
                     ->rows(4)
@@ -52,45 +53,50 @@ class CourseResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->sortable(),
-                
+
                 TextColumn::make('course_code')
                     ->searchable()
                     ->sortable()
                     ->badge()
                     ->color('primary'),
-                
+
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('description')
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 50 ? $state : null;
                     }),
-                
+
                 TextColumn::make('threads_count')
                     ->label('Threads')
                     ->counts('threads')
                     ->sortable()
                     ->badge()
                     ->color('info'),
-                
+
                 TextColumn::make('flash_classes_count')
                     ->label('Flash Classes')
                     ->counts('flashClasses')
                     ->sortable()
                     ->badge()
                     ->color('success'),
-                
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('course_code')
+                    ->label('Course Code')
+                    ->searchable()
+                    ->options(function () {
+                        return \App\Models\Course::pluck('course_code', 'id')->toArray();
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -111,5 +117,10 @@ class CourseResource extends Resource
             'create' => Pages\CreateCourse::route('/create'),
             'edit' => Pages\EditCourse::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count() ?: null;
     }
 }
